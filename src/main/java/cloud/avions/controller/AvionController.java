@@ -116,10 +116,10 @@ public class AvionController {
     }
 
     @PostMapping("{id}/image")
-    public MyJson uploadImage(@RequestBody Avion avion, @PathVariable("id") long id,@RequestParam("image") MultipartFile image) throws IOException {
+    public MyJson uploadImage(@RequestBody Avion avion, @PathVariable("id") long id,@RequestParam("image") String image) throws IOException {
         MyJson json = new MyJson();
         try {
-            avion.setImg(image.getBytes());
+            avion.setImg(image);
             avionService.update(avion, id);
             json.setData(avion);
         } catch (Exception e) {
@@ -131,15 +131,19 @@ public class AvionController {
         return json;
     }
     @GetMapping("{id}/image")
-    public ResponseEntity<byte[]> getImage(@PathVariable("id") long id) {
-       Avion vehicule = avionService.getById(id);
-        if (vehicule == null) {
-            return ResponseEntity.notFound().build();
+    public MyJson getImage(@PathVariable("id") long id) {
+       Avion avion = avionService.getById(id);
+        MyJson json = new MyJson();
+        try {
+
+            json.setData(avion.getImg());
+        } catch (Exception e) {
+            MyError error = new MyError();
+            error.setCode(HttpStatus.BAD_REQUEST.toString());
+            error.setMessage(e.getMessage());
+            json.setError(error);
         }
-        return ResponseEntity
-                .ok()
-                .contentType(MediaType.IMAGE_PNG)
-                .body(vehicule.getImg());
+        return json;
     }
 
     @DeleteMapping("{id}")

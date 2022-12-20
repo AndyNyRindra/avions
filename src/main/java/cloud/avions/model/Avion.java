@@ -21,6 +21,6 @@ public class Avion {
     private Marque marque;
 
     @Lob
-    private byte[] img;
+    private String img;
 
 }
